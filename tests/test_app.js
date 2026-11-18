@@ -24,6 +24,24 @@ test('normalizarOrigen trimea y limita a 200', () => {
   assert.strictEqual(app.normalizarOrigen('x'.repeat(500)).length, 200);
 });
 
+test('interpretarOrigen antepones "Calle" a los patrones numericos del damero', () => {
+  assert.strictEqual(app.interpretarOrigen('414 bis 3770'), 'Calle 414 bis 3770');
+  assert.strictEqual(app.interpretarOrigen('51 1206'), 'Calle 51 1206');
+  assert.strictEqual(app.interpretarOrigen('414 bis'), 'Calle 414 bis');
+  assert.strictEqual(app.interpretarOrigen('51 y 10'), 'Calle 51 y 10');
+  assert.strictEqual(app.interpretarOrigen('  51 y 10  '), 'Calle 51 y 10');
+});
+
+test('interpretarOrigen no toca lo que ya tiene tipo de via o no es patron', () => {
+  assert.strictEqual(app.interpretarOrigen('calle 414 bis 3770'), 'calle 414 bis 3770');
+  assert.strictEqual(app.interpretarOrigen('Calle 12 y 71'), 'Calle 12 y 71');
+  assert.strictEqual(app.interpretarOrigen('Diagonal 74 y 50, La Plata'), 'Diagonal 74 y 50, La Plata');
+  assert.strictEqual(app.interpretarOrigen('Av. 44 1200'), 'Av. 44 1200');
+  assert.strictEqual(app.interpretarOrigen('Plaza Italia, La Plata'), 'Plaza Italia, La Plata');
+  assert.strictEqual(app.interpretarOrigen('Estación Tolosa'), 'Estación Tolosa');
+  assert.strictEqual(app.interpretarOrigen(''), '');
+});
+
 test('buildMapsLibUrl arma la URL de la Maps JavaScript API', () => {
   const url = app.buildMapsLibUrl('AIzaSyTest123');
   assert.strictEqual(url.startsWith('https://maps.googleapis.com/maps/api/js?'), true);

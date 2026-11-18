@@ -32,9 +32,13 @@ quedar tranquilo con la tarjeta, ponete un tope diario (ver paso 5).
 
 1. Entrá a <https://console.cloud.google.com/> y creá un proyecto (nombre
    sugerido: `como-llego-teatro`).
-2. Menú **APIs y servicios, Biblioteca**, buscá **Maps JavaScript API** y
-   habilitala. (Si antes usaste la Maps Embed API en este proyecto, podés
-   dejarla habilitada o quitarla, ya no se usa.)
+2. Menú **APIs y servicios, Biblioteca**, y habilitalas las dos:
+   - **Maps JavaScript API** (dibuja el mapa).
+   - **Directions API** (calcula las rutas; es la clásica, no la "Routes API"
+     nueva). Si falta esta, el mapa carga pero toda búsqueda de ruta falla con
+     un rechazo genérico de key.
+   (Si antes usaste la Maps Embed API en este proyecto, podés dejarla
+   habilitada o quitarla, ya no se usa.)
 3. **APIs y servicios, Credenciales, Crear credenciales, Clave de API**.
 4. Google te va a pedir asociar una **cuenta de facturación** (tarjeta): es un
    requisito del proyecto de Cloud. Con la key restringida a tu sitio (paso 5),
@@ -112,3 +116,12 @@ Las líneas de la sección "Líneas que ya sabés que llegan" fueron verificadas
 noviembre de 2026 contra el sitio oficial del Teatro Argentino (Av. 51 entre 9
 y 10), Moovit y Omnilíneas. Si algo cambia antes de la jam, se edita la lista
 en `index.html` (sección `class="fijo"`), no hay más ciencia.
+
+## Calles con nombre numérico (caso "414 bis 3770")
+
+El geocoder de Google no resuelve puros números como dirección: "414 bis 3770"
+da NOT_FOUND porque no puede distinguir nombre de vía de altura. Con el tipo
+de vía delante ("calle 414 bis 3770") sí lo resuelve. La página lo maneja sola
+(`interpretarOrigen` en `app.js`): si el origen es solo números ("414 bis
+3770", "51 1206", "51 y 10"), le antepone "Calle" y avisa en pantalla cómo lo
+buscó.
