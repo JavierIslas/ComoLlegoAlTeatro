@@ -112,16 +112,24 @@ sirvan con 200.
 
 ## Datos de las líneas
 
-Las líneas de la sección "Líneas que ya sabés que llegan" fueron verificadas en
-noviembre de 2026 contra el sitio oficial del Teatro Argentino (Av. 51 entre 9
-y 10), Moovit y Omnilíneas. Si algo cambia antes de la jam, se edita la lista
-en `index.html` (sección `class="fijo"`), no hay más ciencia.
+Las líneas y paradas de la sección "Cómo acercarse en transporte público"
+fueron verificadas en noviembre de 2026 contra el sitio oficial del Teatro
+Argentino (Av. 51 entre 9 y 10), Moovit y Omnilíneas. Corrección del
+organizador (dato de terreno): la estación de tren La Plata y la terminal de
+micros NO están pegadas al Teatro (unas 14 cuadras por diagonal 80 y 74
+respectivamente); la referencia útil para el transporte son la Plaza San
+Martín y la Plaza Moreno, que rodean al Teatro. Si algo cambia antes de la
+jam, se edita la lista en `index.html` (sección `class="fijo"`), no hay más
+ciencia.
 
-## Calles con nombre numérico (caso "414 bis 3770")
+## Calles con nombre numérico (casos "414 bis 3770" y "Av. 44 1206")
 
 El geocoder de Google no resuelve puros números como dirección: "414 bis 3770"
-da NOT_FOUND porque no puede distinguir nombre de vía de altura. Con el tipo
-de vía delante ("calle 414 bis 3770") sí lo resuelve. La página lo maneja sola
-(`interpretarOrigen` en `app.js`): si el origen es solo números ("414 bis
-3770", "51 1206", "51 y 10"), le antepone "Calle" y avisa en pantalla cómo lo
-buscó.
+da NOT_FOUND porque no puede distinguir nombre de vía de altura. Y no hay
+forma de saber de antemano si una vía numerada es "Calle" o "Avenida" (la 44
+a esa altura es Av. 44). La página lo maneja probando variantes en orden
+(`variantesOrigen` en `app.js`): para números pelados intenta "Calle N",
+"Av. N" y "N, La Plata" hasta que una resuelve, y avisa en pantalla cómo va
+buscando. Para cualquier otra dirección que falle, reintenta sumando
+", La Plata" al final. Los km de rutas y caminos ("Camino Centenario km 27")
+los resuelve Google directamente.

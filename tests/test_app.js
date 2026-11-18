@@ -24,22 +24,26 @@ test('normalizarOrigen trimea y limita a 200', () => {
   assert.strictEqual(app.normalizarOrigen('x'.repeat(500)).length, 200);
 });
 
-test('interpretarOrigen antepones "Calle" a los patrones numericos del damero', () => {
-  assert.strictEqual(app.interpretarOrigen('414 bis 3770'), 'Calle 414 bis 3770');
-  assert.strictEqual(app.interpretarOrigen('51 1206'), 'Calle 51 1206');
-  assert.strictEqual(app.interpretarOrigen('414 bis'), 'Calle 414 bis');
-  assert.strictEqual(app.interpretarOrigen('51 y 10'), 'Calle 51 y 10');
-  assert.strictEqual(app.interpretarOrigen('  51 y 10  '), 'Calle 51 y 10');
+test('variantesOrigen genera Calle, Av. y a secas para los patrones numericos', () => {
+  assert.deepStrictEqual(app.variantesOrigen('414 bis 3770'),
+    ['Calle 414 bis 3770', 'Av. 414 bis 3770', '414 bis 3770, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('44 1206'),
+    ['Calle 44 1206', 'Av. 44 1206', '44 1206, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('  51 y 10  '),
+    ['Calle 51 y 10', 'Av. 51 y 10', '51 y 10, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('414 bis'),
+    ['Calle 414 bis', 'Av. 414 bis', '414 bis, La Plata']);
 });
 
-test('interpretarOrigen no toca lo que ya tiene tipo de via o no es patron', () => {
-  assert.strictEqual(app.interpretarOrigen('calle 414 bis 3770'), 'calle 414 bis 3770');
-  assert.strictEqual(app.interpretarOrigen('Calle 12 y 71'), 'Calle 12 y 71');
-  assert.strictEqual(app.interpretarOrigen('Diagonal 74 y 50, La Plata'), 'Diagonal 74 y 50, La Plata');
-  assert.strictEqual(app.interpretarOrigen('Av. 44 1200'), 'Av. 44 1200');
-  assert.strictEqual(app.interpretarOrigen('Plaza Italia, La Plata'), 'Plaza Italia, La Plata');
-  assert.strictEqual(app.interpretarOrigen('Estación Tolosa'), 'Estación Tolosa');
-  assert.strictEqual(app.interpretarOrigen(''), '');
+test('variantesOrigen no reescribe lo que ya tiene via y reintenta sumando ciudad', () => {
+  assert.deepStrictEqual(app.variantesOrigen('av 44 1206'), ['av 44 1206', 'av 44 1206, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('Av. 44 1206'), ['Av. 44 1206', 'Av. 44 1206, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('camino centenario km 27'),
+    ['camino centenario km 27', 'camino centenario km 27, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('Diagonal 74 y 50, La Plata'),
+    ['Diagonal 74 y 50, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('Plaza Italia'), ['Plaza Italia', 'Plaza Italia, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen(''), []);
 });
 
 test('buildMapsLibUrl arma la URL de la Maps JavaScript API', () => {
