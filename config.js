@@ -5,7 +5,7 @@ var CONFIG = {
   // API key de Google Cloud con la "Maps Embed API" habilitada.
   // Cómo crearla (gratis, 5 minutos): ver README.md, sección "API key".
   // Ojo: sin esta key el mapa embebido no se muestra (el botón a la app sí funciona).
-  GOOGLE_MAPS_API_KEY: '',
+  GOOGLE_MAPS_API_KEY: 'AIzaSyDky5QtQc9q1MKC36_cts2DjmKz4OJb53w',
 
   // Destino fijo: la sede de la jam. No hace falta tocarlo.
   DESTINO: 'Teatro Argentino, Av. 51 702, La Plata',
