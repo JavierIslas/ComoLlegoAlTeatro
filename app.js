@@ -38,6 +38,33 @@
       !/calle|avenida|\bav\.?\b|diagonal|plaza|estaci|ruta|camino|terminal/i.test(s);
   }
 
+  /* --- Tope de cortesía por navegador: MAX_POR_HORA búsquedas por hora.
+   * Es freno de fricción (se borra limpiando el navegador), no seguridad;
+   * la protección real es la restricción de la key por sitio. --- */
+  var MAX_POR_HORA = 12;
+  var VENTANA_MS = 60 * 60 * 1000;
+  var LS_CLAVE = 'cl_busquedas';
+
+  function dentroDeVentana(stamps, ahora, ventanaMs) {
+    return (stamps || []).filter(function (t) {
+      return (ahora - t) >= 0 && (ahora - t) < ventanaMs;
+    });
+  }
+
+  function leerHistorial() {
+    try {
+      var crudo = typeof localStorage !== 'undefined' ? localStorage.getItem(LS_CLAVE) : null;
+      var parsed = crudo ? JSON.parse(crudo) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+
+  function guardarHistorial(stamps) {
+    try {
+      if (typeof localStorage !== 'undefined') { localStorage.setItem(LS_CLAVE, JSON.stringify(stamps)); }
+    } catch (e) { /* modo incógnito o storage lleno: seguimos sin tope */ }
+  }
+
   function conCiudad(o) {
     return /la\s+plata$/i.test(o) ? [o] : [o, o + ', La Plata'];
   }
@@ -228,10 +255,19 @@
 
     if (!form || !input) { return; }
 
+    var buscando = false;
+    var boton = form.querySelector('button');
+
+    function liberarBoton() {
+      buscando = false;
+      if (boton) { boton.disabled = false; }
+    }
+
     // Google llama a gm_authFailure cuando la key no autoriza la JS API
     // (API sin habilitar, o key restringida a otra API). Sin esto, el
     // "Buscando..." quedaria colgado para siempre.
     global.gm_authFailure = global.gm_authFailure || function () {
+      liberarBoton();
       if (estado) { estado.hidden = true; }
       if (errorRuta) {
         errorRuta.textContent = traducirErrorDirections('REQUEST_DENIED');
@@ -246,6 +282,8 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (buscando) { return; } // ya hay una búsqueda en curso
+
       var origen = normalizarOrigen(input.value);
       if (!origen) {
         mostrar('Escribí una dirección, por ejemplo: Diagonal 74 y 50, La Plata');
@@ -272,6 +310,23 @@
       }
       avisoKey.hidden = true;
       resultado.hidden = false;
+
+      // Tope de cortesía (una sola vez, justo antes de gastar cuota):
+      // MAX_POR_HORA búsquedas por hora por navegador.
+      var ahora = Date.now();
+      var historial = dentroDeVentana(leerHistorial(), ahora, VENTANA_MS);
+      if (historial.length >= MAX_POR_HORA) {
+        estado.hidden = true;
+        errorRuta.textContent = 'Llegaste al tope de ' + MAX_POR_HORA +
+          ' búsquedas por hora (cuidamos los costos del mapa). ' +
+          'El botón verde sigue funcionando.';
+        errorRuta.hidden = false;
+        return;
+      }
+      guardarHistorial(historial.concat([ahora]));
+
+      buscando = true;
+      if (boton) { boton.disabled = true; }
       estado.textContent = 'Buscando la mejor ruta en colectivo...';
       estado.hidden = false;
       errorRuta.hidden = true;
@@ -283,6 +338,7 @@
             : 'Buscando como "' + variante + '"...';
         },
         function (err) {
+          liberarBoton();
           estado.hidden = true;
           if (err) {
             errorRuta.textContent = err.message;
@@ -311,6 +367,9 @@
     buildMapsAppUrl: buildMapsAppUrl,
     traducirErrorDirections: traducirErrorDirections,
     inicioEsGenerico: inicioEsGenerico,
+    dentroDeVentana: dentroDeVentana,
+    MAX_POR_HORA: MAX_POR_HORA,
+    VENTANA_MS: VENTANA_MS,
     tieneKey: tieneKey
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; }

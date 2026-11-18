@@ -113,6 +113,17 @@ test('buildMapsAppUrl no requiere key', () => {
   assert.strictEqual(url.includes('key='), false);
 });
 
+test('dentroDeVentana filtra la ventana de una hora para el tope', () => {
+  const H = 3600 * 1000;
+  const ahora = 10 * H;
+  assert.strictEqual(app.dentroDeVentana([ahora - 5, ahora - 60, ahora - H + 1, 0], ahora, H).length, 3);
+  assert.strictEqual(app.dentroDeVentana([0, 1, 2], ahora, H).length, 0);
+  assert.strictEqual(app.dentroDeVentana([ahora + 5000], ahora, H).length, 0);
+  const lleno = Array(app.MAX_POR_HORA).fill(0).map((_, i) => ahora - i * 1000);
+  assert.strictEqual(app.dentroDeVentana(lleno, ahora, app.VENTANA_MS).length, app.MAX_POR_HORA);
+  assert.strictEqual(app.MAX_POR_HORA, 12);
+});
+
 test('el HTML referencia config, app y estilo, y tiene el form', () => {
   const fs = require('fs');
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');

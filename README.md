@@ -110,6 +110,19 @@ Corre tres capas: chequeo de sintaxis (`node --check`), tests de la lógica de
 URLs (`tests/test_app.js`) y un humo HTTP que verifica que los 4 archivos se
 sirvan con 200.
 
+## Tope por visitante y protección de la cuota
+
+- **Por visitante** (frontend, cortesía): no se lanzan dos búsquedas a la vez
+  (el botón se deshabilita mientras busca) y hay un tope de 12 búsquedas por
+  hora por navegador, contadas en localStorage. Al llegar al tope, avisa y el
+  botón verde (que no gasta cuota de rutas) sigue funcionando. Es freno de
+  fricción, no seguridad: se borra limpiando el navegador.
+- **Real** (server-side, Google): la key está restringida por sitio
+  (`usuario.github.io/*`), así que la cuota solo se puede gastar desde esta
+  página. Si en Cloud Console, Directions API, Cuotas, aparece
+  "Requests per day" con edición habilitada, fijar un tope diario tipo 500
+  ahí es el límite duro definitivo.
+
 ## Datos de las líneas
 
 Las líneas y paradas de la sección "Cómo acercarse en transporte público"
