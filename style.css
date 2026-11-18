@@ -1,0 +1,146 @@
+/* ¿Cómo llego al Teatro? - estilos. Sobrio, oscuro, mobile primero. */
+:root {
+  --fondo: #14141f;
+  --card: #1e1e2d;
+  --borde: #2e2e44;
+  --texto: #e8e8f2;
+  --texto-suave: #a8a8c0;
+  --acento: #7c5cff;
+  --acento-oscuro: #5b3fd6;
+  --verde: #2fbf71;
+  --error: #ff6b6b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.55;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+header { text-align: center; margin-bottom: 1.5rem; }
+
+.edicion {
+  margin: 0 0 0.5rem;
+  color: var(--acento);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+}
+
+.fechas {
+  margin: 0 auto;
+  max-width: 46ch;
+  color: var(--texto-suave);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+
+.fila { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+input[type="text"] {
+  flex: 1 1 16rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 1rem;
+}
+
+input[type="text"]:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+button {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--acento);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover { background: var(--acento-oscuro); }
+
+.ayuda {
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.error {
+  margin: 0.6rem 0 0;
+  color: var(--error);
+  font-weight: 600;
+}
+
+.aviso-key {
+  background: #3a2f14;
+  border: 1px solid #6b5518;
+  color: #ffd88a;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.9rem;
+}
+
+.boton-app {
+  display: block;
+  text-align: center;
+  background: var(--verde);
+  color: #08130d;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  margin-bottom: 0.8rem;
+}
+
+#mapa { border-radius: 8px; }
+
+.nota {
+  margin: 0.8rem 0 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.fijo h2 { margin-top: 0; font-size: 1.15rem; }
+
+.lineas { margin: 0; padding-left: 1.2rem; }
+.lineas li { margin-bottom: 0.4rem; }
+
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+footer a { color: var(--acento); }
+
+a { color: var(--acento); }

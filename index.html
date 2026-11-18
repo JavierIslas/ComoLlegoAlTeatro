@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¿Cómo llego al Teatro?</title>
+  <meta name="description" content="Cómo llegar en transporte público al Teatro Argentino de La Plata, sede de la Global Game Jam 2027.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="edicion">Global Game Jam 2027 · La Plata</p>
+      <h1>¿Cómo llego al Teatro?</h1>
+      <p class="fechas">Del 25 al 31 de enero de 2027, en el Centro Provincial de las Artes
+        Teatro Argentino (Av. 51 702, entre 9 y 10, La Plata).</p>
+    </header>
+
+    <form id="form-ruta" class="card" autocomplete="off">
+      <label for="origen">Escribí tu punto de partida (calle y altura, o dos esquinas)</label>
+      <div class="fila">
+        <input id="origen" name="origen" type="text" maxlength="200"
+               placeholder="Ej: Diagonal 74 y 50, La Plata" required>
+        <button type="submit">Ver cómo llegar</button>
+      </div>
+      <p class="ayuda">No usamos tu ubicación: escribís la dirección que quieras.
+        Ejemplos: “Calle 12 y 71”, “Plaza Italia, La Plata”, “Estación Tolosa”.</p>
+      <p id="error" class="error" hidden></p>
+    </form>
+
+    <section id="resultado" class="card" hidden>
+      <p id="aviso-key" class="aviso-key" hidden>
+        Todavía no está configurada la API key de Google Maps, así que el mapa de acá
+        abajo no carga. Mientras tanto, usá el botón verde: abre la misma ruta en
+        Google Maps con los colectivos ya calculados.
+      </p>
+      <a id="abrir-app" class="boton-app" href="#" target="_blank" rel="noopener">
+        Abrir la ruta en Google Maps (app o web)</a>
+      <iframe id="mapa" title="Ruta en transporte público hasta el Teatro Argentino"
+              width="100%" height="480" style="border:0" loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen></iframe>
+      <p class="nota">Los horarios y combinaciones dependen de cada línea y del día
+        (fines de semana y feriados cambian). Confirmá el último tramo con la app
+        que uses.</p>
+    </section>
+
+    <section class="card fijo">
+      <h2>Líneas que ya sabés que llegan</h2>
+      <p>Si querés ir directo, estas son las líneas con parada a menos de 6 cuadras
+        del Teatro (verificado sobre los recorridos publicados):</p>
+      <ul class="lineas">
+        <li><strong>Colectivos:</strong> 202, 214, 215, 273, 275, 307, 418, 506,
+          508, 520, 561 y ramales Este, Oeste, Norte y Sur.</li>
+        <li><strong>Tren:</strong> línea Roca (Constitución, La Plata). La estación
+          La Plata queda a unas 4 cuadras del Teatro.</li>
+        <li><strong>Paradas cercanas:</strong> Av. 51 y 9, Av. 51 y 8, 54 y 9,
+          55 y 10.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Armado por la comunidad de videojuegos de La Plata para la
+        Global Game Jam. Sumate:
+        <a href="https://discord.gg/2S6gb3g" target="_blank" rel="noopener">Discord</a>
+        · <a href="https://www.instagram.com/LPGameDevs/" target="_blank" rel="noopener">Instagram</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>
