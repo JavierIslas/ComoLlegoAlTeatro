@@ -1,9 +1,10 @@
 # ¿Cómo llego al Teatro?
 
 Página estática para la sede La Plata de la Global Game Jam 2027: escribís una
-dirección de partida (sin geolocalización) y te muestra la ruta en transporte
-público hasta el Teatro Argentino (Av. 51 702, La Plata), con el mapa de Google
-embebido más una lista curada de líneas que llegan.
+dirección de partida (sin geolocalización) y te muestra la mejor ruta en
+transporte público hasta el Teatro Argentino (Av. 51 702, La Plata), con el
+mapa de Google y la lista de pasos (qué línea tomar, dónde subir y bajar) en la
+propia página, más una lista curada de líneas que llegan.
 
 Sin build, sin dependencias, sin backend: 4 archivos servibles desde cualquier
 lado. Funciona igual en GitHub Pages y en itch.io.
@@ -20,29 +21,41 @@ lado. Funciona igual en GitHub Pages y en itch.io.
 
 ## API key (una sola vez, 5 minutos)
 
-El mapa embebido usa la **Maps Embed API** de Google. Es gratuita y sin límite
-de uso, pero exige una API key propia:
+El cálculo de rutas usa la **Maps JavaScript API** de Google (servicio
+Directions). Conviene saber qué es gratis y qué no:
+
+- Cargar el mapa: 10.000 cargas gratis por mes.
+- Calcular cada ruta: 10.000 búsquedas gratis por mes.
+
+Para una página de difusión de una jam eso es imposible de gastar, pero para
+quedar tranquilo con la tarjeta, ponete un tope diario (ver paso 5).
 
 1. Entrá a <https://console.cloud.google.com/> y creá un proyecto (nombre
    sugerido: `como-llego-teatro`).
-2. Menú **APIs y servicios, Biblioteca**, buscá **Maps Embed API** y
-   habilitala.
+2. Menú **APIs y servicios, Biblioteca**, buscá **Maps JavaScript API** y
+   habilitala. (Si antes usaste la Maps Embed API en este proyecto, podés
+   dejarla habilitada o quitarla, ya no se usa.)
 3. **APIs y servicios, Credenciales, Crear credenciales, Clave de API**.
 4. Google te va a pedir asociar una **cuenta de facturación** (tarjeta): es un
-   requisito del proyecto de Cloud, pero la Maps Embed API se factura en cero,
-   sin límite de requests. No genera cargos por más visitas que tenga la página.
-5. **Recomendado**, restringí la clave: en Credenciales, editá la clave,
-   sección **Restricciones de API**, dejá marcada solo *Maps Embed API*.
-6. Pegá la clave en `config.js`, campo `GOOGLE_MAPS_API_KEY`.
+   requisito del proyecto de Cloud. Con el tope del paso 5, no llega a facturar
+   nunca en el uso normal de esta página.
+5. **Muy recomendado**, ponete un tope de cuota: **APIs y servicios, Maps
+   JavaScript API, Cuotas**, buscá "Requests per day" y poni un número tipo
+   2000. Igual para la API de direcciones (Directions) si aparece. Así, aunque
+   alguien abuse de la key, se corta el suministro antes de generar facturación.
+6. **Recomendado también**, restringí la clave: en Credenciales, editá la
+   clave, sección **Restricciones de API**, dejá marcada solo
+   *Maps JavaScript API*.
+7. Pegá la clave en `config.js`, campo `GOOGLE_MAPS_API_KEY`.
 
 Sobre la restricción por *referrer*: si la página va a vivir solo en GitHub
 Pages, podés restringir a `TU-USUARIO.github.io/*`. En itch.io el HTML corre
 dentro de un iframe con dominios propios de itch (`*.itch.zone`, CDN), que
-cambian; para itch conviene dejar la restricción solo por API (paso 5) y no por
+cambian; para itch conviene dejar la restricción solo por API (paso 6) y no por
 referrer.
 
-Sin key la página no se rompe: el mapa embebido queda oculto con un aviso, y el
-botón verde (que abre la ruta en la app de Google Maps, sin key) sigue
+Sin key la página no se rompe: el cálculo queda deshabilitado con un aviso, y
+el botón verde (que abre la ruta en la app de Google Maps, sin key) sigue
 funcionando.
 
 ## Publicar

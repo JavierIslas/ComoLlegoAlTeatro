@@ -24,30 +24,25 @@ test('normalizarOrigen trimea y limita a 200', () => {
   assert.strictEqual(app.normalizarOrigen('x'.repeat(500)).length, 200);
 });
 
-test('buildEmbedUrl arma la URL del embed en modo transit', () => {
-  const url = app.buildEmbedUrl('Calle 12 y 71, La Plata', 'AIzaSyTest123');
-  assert.strictEqual(url.startsWith('https://www.google.com/maps/embed/v1/directions?'), true);
+test('buildMapsLibUrl arma la URL de la Maps JavaScript API', () => {
+  const url = app.buildMapsLibUrl('AIzaSyTest123');
+  assert.strictEqual(url.startsWith('https://maps.googleapis.com/maps/api/js?'), true);
   const params = new URLSearchParams(url.slice(url.indexOf('?') + 1));
   assert.strictEqual(params.get('key'), 'AIzaSyTest123');
-  assert.strictEqual(params.get('origin'), 'Calle 12 y 71, La Plata');
-  assert.strictEqual(params.get('mode'), 'transit');
   assert.strictEqual(params.get('language'), 'es');
-  assert.strictEqual(params.get('region'), 'ar');
-  assert.match(params.get('destination'), /Teatro Argentino/);
-});
-
-test('buildEmbedUrl codifica caracteres especiales', () => {
-  const url = app.buildEmbedUrl('Ñandú 305, Berazategui', 'AIzaSyTest123');
-  const params = new URLSearchParams(url.slice(url.indexOf('?') + 1));
-  // decodeURIComponent debe devolver el original: nada crudo sin codificar.
-  assert.strictEqual(decodeURIComponent(params.get('origin')), 'Ñandú 305, Berazategui');
+  assert.strictEqual(url.includes('callback='), true);
   assert.strictEqual(url.includes(' '), false);
+  assert.throws(() => app.buildMapsLibUrl(''), /API key/i);
+  assert.throws(() => app.buildMapsLibUrl(null), /API key/i);
 });
 
-test('buildEmbedUrl exige origen y key', () => {
-  assert.throws(() => app.buildEmbedUrl('', 'AIzaSyTest123'), /origen/i);
-  assert.throws(() => app.buildEmbedUrl('Calle 1', ''), /API key/i);
-  assert.throws(() => app.buildEmbedUrl('   ', 'AIzaSyTest123'), /origen/i);
+test('traducirErrorDirections devuelve mensajes humanos por estado', () => {
+  assert.match(app.traducirErrorDirections('REQUEST_DENIED'), /Maps JavaScript API/);
+  assert.match(app.traducirErrorDirections('ZERO_RESULTS'), /transporte público/i);
+  assert.match(app.traducirErrorDirections('NOT_FOUND'), /esquinas/i);
+  assert.match(app.traducirErrorDirections('OVER_QUERY_LIMIT'), /cuota/i);
+  // Estado desconocido: no truena, avisa con el estado crudo.
+  assert.match(app.traducirErrorDirections('STATUS_RARO'), /STATUS_RARO/);
 });
 
 test('buildMapsAppUrl usa la Maps URL oficial con travelmode transit', () => {
@@ -70,8 +65,8 @@ test('el HTML referencia config, app y estilo, y tiene el form', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   for (const pieza of [
     'config.js', 'app.js', 'style.css',
-    'id="form-ruta"', 'id="origen"', 'id="mapa"', 'id="abrir-app"',
-    'lang="es"'
+    'id="form-ruta"', 'id="origen"', 'id="mapa-canvas"', 'id="pasos"',
+    'id="abrir-app"', 'id="estado"', 'id="error-ruta"', 'lang="es"'
   ]) {
     assert.ok(html.includes(pieza), 'falta en index.html: ' + pieza);
   }

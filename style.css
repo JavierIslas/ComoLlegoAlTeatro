@@ -122,7 +122,36 @@ button:hover { background: var(--acento-oscuro); }
   margin-bottom: 0.8rem;
 }
 
-#mapa { border-radius: 8px; }
+#mapa-canvas {
+  height: 400px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+  background: #e8e8f2;
+}
+
+.estado {
+  margin: 0 0 0.6rem;
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+/* Panel de pasos de Google: viene con texto oscuro, fondo claro. */
+.pasos {
+  background: #fff;
+  color: #202124;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 0.8rem;
+  max-height: 460px;
+  overflow-y: auto;
+  font-size: 0.95rem;
+}
+
+.pasos:empty { display: none; }
+
+.pasos a { color: #1a73e8; }
+.pasos img { max-width: 100%; }
 
 .nota {
   margin: 0.8rem 0 0;

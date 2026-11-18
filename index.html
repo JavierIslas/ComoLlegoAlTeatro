@@ -33,19 +33,20 @@
 
     <section id="resultado" class="card" hidden>
       <p id="aviso-key" class="aviso-key" hidden>
-        Todavía no está configurada la API key de Google Maps, así que el mapa de acá
-        abajo no carga. Mientras tanto, usá el botón verde: abre la misma ruta en
-        Google Maps con los colectivos ya calculados.
+        Todavía no está configurada la API key de Google Maps, así que no puedo
+        calcular la ruta acá. Mientras tanto, usá el botón verde: abre la misma
+        ruta en Google Maps con los colectivos ya calculados.
       </p>
       <a id="abrir-app" class="boton-app" href="#" target="_blank" rel="noopener">
         Abrir la ruta en Google Maps (app o web)</a>
-      <iframe id="mapa" title="Ruta en transporte público hasta el Teatro Argentino"
-              width="100%" height="480" style="border:0" loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen></iframe>
-      <p class="nota">Los horarios y combinaciones dependen de cada línea y del día
-        (fines de semana y feriados cambian). Confirmá el último tramo con la app
-        que uses.</p>
+      <p id="estado" class="estado" hidden></p>
+      <p id="error-ruta" class="error" hidden></p>
+      <div id="mapa-canvas" role="img"
+           aria-label="Mapa con la mejor ruta en transporte público hasta el Teatro Argentino"></div>
+      <div id="pasos" class="pasos"></div>
+      <p class="nota">Mostramos la mejor opción de Google para ahora; los horarios
+        y combinaciones dependen de cada línea y del día (fines de semana y feriados
+        cambian). Confirmá el último tramo con la app que uses.</p>
     </section>
 
     <section class="card fijo">
