@@ -37,12 +37,16 @@ quedar tranquilo con la tarjeta, ponete un tope diario (ver paso 5).
    dejarla habilitada o quitarla, ya no se usa.)
 3. **APIs y servicios, Credenciales, Crear credenciales, Clave de API**.
 4. Google te va a pedir asociar una **cuenta de facturación** (tarjeta): es un
-   requisito del proyecto de Cloud. Con el tope del paso 5, no llega a facturar
-   nunca en el uso normal de esta página.
-5. **Muy recomendado**, ponete un tope de cuota: **APIs y servicios, Maps
-   JavaScript API, Cuotas**, buscá "Requests per day" y poni un número tipo
-   2000. Igual para la API de direcciones (Directions) si aparece. Así, aunque
-   alguien abuse de la key, se corta el suministro antes de generar facturación.
+   requisito del proyecto de Cloud. Con la key restringida a tu sitio (paso 5),
+   el uso lo genera tu página y las 10.000 gratis por mes no se gastan ni cerca.
+5. **Muy recomendado**, protegé la key para que solo la use esta página: en
+   Credenciales, editá la clave, sección **Restricciones de aplicación,
+   Referenciadores HTTP**, y agregá `TU-USUARIO.github.io/*` (y los dominios de
+   itch si la subís ahí). Así nadie puede usar tu key desde otro sitio, que es
+   el único costo real posible. Nota: las cuotas diarias de Maps ya no son
+   editables en la consola de Cloud (quedaron fijas o "Ilimitado"); si querés
+   alarma de gasto, creá un presupuesto con alertas en **Facturación,
+   Presupuestos y alertas**.
 6. **Recomendado también**, restringí la clave: en Credenciales, editá la
    clave, sección **Restricciones de API**, dejá marcada solo
    *Maps JavaScript API*.
