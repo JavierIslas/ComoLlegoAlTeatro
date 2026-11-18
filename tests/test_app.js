@@ -30,9 +30,39 @@ test('variantesOrigen genera Calle, Av. y a secas para los patrones numericos', 
   assert.deepStrictEqual(app.variantesOrigen('44 1206'),
     ['Calle 44 1206', 'Av. 44 1206', '44 1206, La Plata']);
   assert.deepStrictEqual(app.variantesOrigen('  51 y 10  '),
-    ['Calle 51 y 10', 'Av. 51 y 10', '51 y 10, La Plata']);
+    ['Calle 51 y Calle 10, La Plata', 'Av. 51 y Av. 10, La Plata',
+     'Diagonal 51 y 10, La Plata', '51 y 10, La Plata']);
   assert.deepStrictEqual(app.variantesOrigen('414 bis'),
     ['Calle 414 bis', 'Av. 414 bis', '414 bis, La Plata']);
+});
+
+test('variantesOrigen arma esquinas con las dos vias tipadas y ciudad', () => {
+  assert.deepStrictEqual(app.variantesOrigen('68 y 4'),
+    ['Calle 68 y Calle 4, La Plata', 'Av. 68 y Av. 4, La Plata',
+     'Diagonal 68 y 4, La Plata', '68 y 4, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('calle 68 y 4'),
+    ['calle 68 y 4, La Plata', 'Calle 68 y Calle 4, La Plata',
+     'Av. 68 y Av. 4, La Plata', 'Diagonal 68 y 4, La Plata']);
+  assert.deepStrictEqual(app.variantesOrigen('68 bis y 4'),
+    ['Calle 68 bis y Calle 4, La Plata', 'Av. 68 bis y Av. 4, La Plata',
+     'Diagonal 68 bis y 4, La Plata', '68 bis y 4, La Plata']);
+  // La esquina escrita con su via va primera, sin duplicarse.
+  assert.deepStrictEqual(app.variantesOrigen('Diagonal 74 y 50, La Plata'),
+    ['Diagonal 74 y 50, La Plata', 'Calle 74 y Calle 50, La Plata',
+     'Av. 74 y Av. 50, La Plata']);
+  // Esquinas con palabras que no son vias numeradas no se reescriben.
+  assert.deepStrictEqual(app.variantesOrigen('Plaza Italia y 10'),
+    ['Plaza Italia y 10', 'Plaza Italia y 10, La Plata']);
+});
+
+test('inicioEsGenerico detecta localidades solas pero no direcciones reales', () => {
+  assert.strictEqual(app.inicioEsGenerico('La Plata, Provincia de Buenos Aires, Argentina'), true);
+  assert.strictEqual(app.inicioEsGenerico('Tolosa, La Plata, Argentina'), true);
+  assert.strictEqual(app.inicioEsGenerico('C. 4 & C. 68, B1904 La Plata, Provincia de Buenos Aires'), false);
+  assert.strictEqual(app.inicioEsGenerico('Estación Tolosa, La Plata, Argentina'), false);
+  assert.strictEqual(app.inicioEsGenerico('Plaza Italia, La Plata, Argentina'), false);
+  assert.strictEqual(app.inicioEsGenerico('Av. 44 1206, B1900 La Plata'), false);
+  assert.strictEqual(app.inicioEsGenerico(''), false);
 });
 
 test('variantesOrigen no reescribe lo que ya tiene via y reintenta sumando ciudad', () => {
@@ -41,7 +71,8 @@ test('variantesOrigen no reescribe lo que ya tiene via y reintenta sumando ciuda
   assert.deepStrictEqual(app.variantesOrigen('camino centenario km 27'),
     ['camino centenario km 27', 'camino centenario km 27, La Plata']);
   assert.deepStrictEqual(app.variantesOrigen('Diagonal 74 y 50, La Plata'),
-    ['Diagonal 74 y 50, La Plata']);
+    ['Diagonal 74 y 50, La Plata', 'Calle 74 y Calle 50, La Plata',
+     'Av. 74 y Av. 50, La Plata']);
   assert.deepStrictEqual(app.variantesOrigen('Plaza Italia'), ['Plaza Italia', 'Plaza Italia, La Plata']);
   assert.deepStrictEqual(app.variantesOrigen(''), []);
 });

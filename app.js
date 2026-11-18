@@ -22,25 +22,62 @@
   var PATRON_NUMERICO = [
     /^\d{1,3}\s+bis\s+\d{1,5}$/i,      // 414 bis 3770
     /^\d{1,3}\s+\d{1,5}$/,             // 51 1206 (o Av. 44 1206)
-    /^\d{1,3}\s+bis$/i,                // 414 bis
-    /^\d{1,3}\s+(?:y|e|,)\s+\d{1,3}$/i // 51 y 10
+    /^\d{1,3}\s+bis$/i                 // 414 bis
   ];
   var YA_TIENE_VIA = /^(calle|c\/|av|avda|avenida|diag|diagonal|boulevard|boul|bv|ruta|camino|pasaje|pje|autopista|auto)\b/i;
+
+  // Localidades del Gran La Plata: si Google resuelve el origen a una de
+  // estas SOLA (sin calle, sin "&" de esquina), geocodificó al centro del
+  // pueblo y no a la dirección pedida. Descartar esa variante.
+  var LOCALIDAD_SOLA = /^(la\s+plata|tolosa|gonnet|city\s+bell|los\s+hornos|ringuelet|arturo\s+seguí|hernández|villa\s+elvira|altos\s+de\s+san\s+lorenzo|olmos|abasto|berisso|villa\s+bosch|gorina|gutiérrez|etcheverry|melchor\s+romero|san\s+carlos|transradio)\b[,\s]/i;
+
+  function inicioEsGenerico(startAddress) {
+    var s = String(startAddress || '');
+    return LOCALIDAD_SOLA.test(s) &&
+      s.indexOf('&') === -1 &&
+      !/calle|avenida|\bav\.?\b|diagonal|plaza|estaci|ruta|camino|terminal/i.test(s);
+  }
+
+  function conCiudad(o) {
+    return /la\s+plata$/i.test(o) ? [o] : [o, o + ', La Plata'];
+  }
 
   // Candidatos a origen, en orden de preferencia. El primero es lo que el
   // usuario quiso decir; los demás son reintentos si Google no resuelve.
   function variantesOrigen(origen) {
     var o = normalizarOrigen(origen);
     if (!o) { return []; }
-    if (YA_TIENE_VIA.test(o)) {
-      return /la\s+plata$/i.test(o) ? [o] : [o, o + ', La Plata'];
+
+    // Esquina de dos vías numeradas: "68 y 4", "calle 68 y 4", "80 y 44".
+    // Google solo la entiende con las dos vías tipadas y la ciudad.
+    var e = o.match(/^(?:(?:calle|c\/|av|avda|avenida|diag|diagonal)\s+)?(\d{1,3})\s+(bis)\s+(?:y|e)\s+(\d{1,3})(?:\s*,\s*la\s+plata)?$/i) ||
+            o.match(/^(?:(?:calle|c\/|av|avda|avenida|diag|diagonal)\s+)?(\d{1,3})\s+(?:y|e)\s+(\d{1,3})(?:\s*,\s*la\s+plata)?$/i);
+    if (e) {
+      var conBis = e.length === 4 && /^bis$/i.test(e[2]);
+      var via1 = e[1] + (conBis ? ' bis' : '');
+      var via2 = e[e.length - 1];
+      var tipadas = [
+        'Calle ' + via1 + ' y Calle ' + via2 + ', La Plata',
+        'Av. ' + via1 + ' y Av. ' + via2 + ', La Plata',
+        'Diagonal ' + via1 + ' y ' + via2 + ', La Plata'
+      ];
+      var propia = o + (/, la plata$/i.test(o) ? '' : ', La Plata');
+      // Si ya escribió un tipo de vía (ej. "Diagonal 74 y 50"), respetarlo
+      // primero y probar las tipadas como reintentos.
+      return /^(calle|c\/|av|avda|avenida|diag|diagonal)\b/i.test(o)
+        ? [propia].concat(tipadas.filter(function (t) {
+            return t.toLowerCase() !== propia.toLowerCase();
+          }))
+        : tipadas.concat([propia]);
     }
+
+    if (YA_TIENE_VIA.test(o)) { return conCiudad(o); }
     for (var i = 0; i < PATRON_NUMERICO.length; i++) {
       if (PATRON_NUMERICO[i].test(o)) {
         return ['Calle ' + o, 'Av. ' + o, o + ', La Plata'];
       }
     }
-    return /la\s+plata$/i.test(o) ? [o] : [o, o + ', La Plata'];
+    return conCiudad(o);
   }
 
   // URL de carga de la Maps JavaScript API (la lib que calcula rutas).
@@ -157,11 +194,16 @@
             travelMode: global.google.maps.TravelMode.TRANSIT
           },
           function (result, status) {
-            if (status === global.google.maps.DirectionsStatus.OK) {
+            var inicio = (result && result.routes && result.routes[0] &&
+              result.routes[0].legs && result.routes[0].legs[0])
+                ? result.routes[0].legs[0].start_address : '';
+            if (status === global.google.maps.DirectionsStatus.OK && !inicioEsGenerico(inicio)) {
               renderer.setDirections(result); // routes[0] = mejor opción
               alTerminar(null, v, result.routes[0]);
             } else {
-              ultimoError = traducirErrorDirections(status);
+              ultimoError = (status === global.google.maps.DirectionsStatus.OK)
+                ? 'Google ubicó "' + v + '" en el centro de una localidad, no en tu dirección. Probá con otra forma de escribirla.'
+                : traducirErrorDirections(status);
               siguiente();
             }
           }
@@ -268,6 +310,7 @@
     buildMapsLibUrl: buildMapsLibUrl,
     buildMapsAppUrl: buildMapsAppUrl,
     traducirErrorDirections: traducirErrorDirections,
+    inicioEsGenerico: inicioEsGenerico,
     tieneKey: tieneKey
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; }

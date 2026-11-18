@@ -127,9 +127,18 @@ ciencia.
 El geocoder de Google no resuelve puros números como dirección: "414 bis 3770"
 da NOT_FOUND porque no puede distinguir nombre de vía de altura. Y no hay
 forma de saber de antemano si una vía numerada es "Calle" o "Avenida" (la 44
-a esa altura es Av. 44). La página lo maneja probando variantes en orden
-(`variantesOrigen` en `app.js`): para números pelados intenta "Calle N",
-"Av. N" y "N, La Plata" hasta que una resuelve, y avisa en pantalla cómo va
-buscando. Para cualquier otra dirección que falle, reintenta sumando
-", La Plata" al final. Los km de rutas y caminos ("Camino Centenario km 27")
-los resuelve Google directamente.
+a esa altura es Av. 44). Las ESQUINAS de dos vías numeradas ("68 y 4") son
+peor: solo las entiende con las dos vías tipadas y ciudad ("Calle 68 y Calle
+4, La Plata"), y la forma pelada con ciudad ("68 y 4, La Plata") resuelve a
+"La Plata" genérico (el centro de la ciudad), lo que da una ruta desde otro
+lado sin que se note.
+
+La página maneja todo esto probando variantes en orden (`variantesOrigen` en
+`app.js`): números con altura intenta "Calle N", "Av. N" y "N, La Plata";
+esquinas intenta "Calle N y Calle M, La Plata", "Av. N y Av. M, La Plata",
+"Diagonal N y M, La Plata" y la pelada al final; y si el usuario ya tipeó un
+tipo de vía, su forma va primera. Además, si Google resuelve una variante a
+una localidad sola sin dirección ("La Plata" pelado; ver `inicioEsGenerico`),
+la descarta y sigue probando en vez de dar una ruta fantasma. Para cualquier
+otra dirección que falle, reintenta sumando ", La Plata" al final. Los km de
+rutas y caminos ("Camino Centenario km 27") los resuelve Google directamente.
