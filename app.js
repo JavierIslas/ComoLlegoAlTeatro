@@ -29,7 +29,7 @@
   // Localidades del Gran La Plata: si Google resuelve el origen a una de
   // estas SOLA (sin calle, sin "&" de esquina), geocodificó al centro del
   // pueblo y no a la dirección pedida. Descartar esa variante.
-  var LOCALIDAD_SOLA = /^(la\s+plata|tolosa|gonnet|city\s+bell|los\s+hornos|ringuelet|arturo\s+seguí|hernández|villa\s+elvira|altos\s+de\s+san\s+lorenzo|olmos|abasto|berisso|villa\s+bosch|gorina|gutiérrez|etcheverry|melchor\s+romero|san\s+carlos|transradio)\b[,\s]/i;
+  var LOCALIDAD_SOLA = /^(la\s+plata|tolosa|gonnet|city\s+bell|los\s+hornos|ringuelet|arturo\s+seguí|hernández|villa\s+elvira|altos\s+de\s+san\s+lorenzo|olmos|abasto|berisso|ensenada|punta\s+lara|villa\s+elisa|villa\s+bosch|gorina|gutiérrez|etcheverry|melchor\s+romero|san\s+carlos|transradio)\b[,\s]/i;
 
   function inicioEsGenerico(startAddress) {
     var s = String(startAddress || '');
@@ -130,7 +130,7 @@
   // Estados del DirectionsService a mensaje humano.
   var ERRORES_DIRECTIONS = {
     NOT_FOUND: 'No encontré esa dirección como punto de partida. Probá con dos esquinas (ej: Calle 12 y 71) o sumá la ciudad.',
-    ZERO_RESULTS: 'No hay ruta en transporte público desde ahí. Probá con otro punto de partida.',
+    ZERO_RESULTS: 'No hay ruta en transporte público desde ahí. Si la dirección es de otra localidad (Ensenada, Berisso, Tolosa...), sumala; si no, probá con otro punto de partida.',
     OVER_QUERY_LIMIT: 'Se llenó la cuota de rutas de Google por ahora. Probá en un rato o usá el botón verde.',
     REQUEST_DENIED: 'Google rechazó la key. Habilitá "Maps JavaScript API" en el proyecto de Cloud (ver README, sección API key).',
     INVALID_REQUEST: 'Esa dirección no la pude interpretar. Probá con dos esquinas, ej: Calle 12 y 71.'

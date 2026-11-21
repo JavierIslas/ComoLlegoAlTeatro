@@ -58,10 +58,16 @@ test('variantesOrigen arma esquinas con las dos vias tipadas y ciudad', () => {
 test('inicioEsGenerico detecta localidades solas pero no direcciones reales', () => {
   assert.strictEqual(app.inicioEsGenerico('La Plata, Provincia de Buenos Aires, Argentina'), true);
   assert.strictEqual(app.inicioEsGenerico('Tolosa, La Plata, Argentina'), true);
+  assert.strictEqual(app.inicioEsGenerico('Berisso, Provincia de Buenos Aires, Argentina'), true);
+  assert.strictEqual(app.inicioEsGenerico('Ensenada, Provincia de Buenos Aires, Argentina'), true);
+  assert.strictEqual(app.inicioEsGenerico('Punta Lara, Ensenada, Argentina'), true);
   assert.strictEqual(app.inicioEsGenerico('C. 4 & C. 68, B1904 La Plata, Provincia de Buenos Aires'), false);
   assert.strictEqual(app.inicioEsGenerico('Estación Tolosa, La Plata, Argentina'), false);
   assert.strictEqual(app.inicioEsGenerico('Plaza Italia, La Plata, Argentina'), false);
   assert.strictEqual(app.inicioEsGenerico('Av. 44 1206, B1900 La Plata'), false);
+  // Dirección real en Ensenada (start_address observado en la página publicada):
+  // arranca con la calle, no con la localidad.
+  assert.strictEqual(app.inicioEsGenerico('BLA, España 82, B1925 Ensenada, Provincia de Buenos Aires, Argentina'), false);
   assert.strictEqual(app.inicioEsGenerico(''), false);
 });
 
@@ -92,6 +98,10 @@ test('buildMapsLibUrl arma la URL de la Maps JavaScript API', () => {
 test('traducirErrorDirections devuelve mensajes humanos por estado', () => {
   assert.match(app.traducirErrorDirections('REQUEST_DENIED'), /Maps JavaScript API/);
   assert.match(app.traducirErrorDirections('ZERO_RESULTS'), /transporte público/i);
+  // El hint de sumar la localidad vive acá (no en NOT_FOUND) porque una
+  // dirección de otra localidad sin ciudad agotada en variantes termina en
+  // ZERO_RESULTS (caso real: "España 82" sin "Ensenada").
+  assert.match(app.traducirErrorDirections('ZERO_RESULTS'), /(Ensenada|localidad)/i);
   assert.match(app.traducirErrorDirections('NOT_FOUND'), /esquinas/i);
   assert.match(app.traducirErrorDirections('OVER_QUERY_LIMIT'), /cuota/i);
   // Estado desconocido: no truena, avisa con el estado crudo.
